@@ -17,7 +17,7 @@ function Dashboard() {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get("https://backend-main-hackathon.vercel.app/categories");
+            const response = await axios.get("https://backend-main-hackathon.vercel.app/category");
             setCategories(response.data);
         } catch (error) {
             console.error("Error fetching categories:", error);
@@ -32,7 +32,7 @@ function Dashboard() {
                 Maxloan: maxLoan,
                 Loanperiod: loanPeriod,
             };
-            await axios.post("https://backend-main-hackathon.vercel.app/categories", newCategory);
+            await axios.post("https://backend-main-hackathon.vercel.app/category", newCategory);
             fetchCategories(); // Refresh categories
             setCategoryName("");
             setMaxLoan("");
@@ -49,7 +49,7 @@ function Dashboard() {
                 name: subCategoryName,
                 category: selectedCategory,
             };
-            await axios.post("https://backend-main-hackathon.vercel.app/subcategories", newSubCategory);
+            await axios.post("https://backend-main-hackathon.vercel.app/subcategory", newSubCategory);
             fetchCategories(); // Refresh categories to include subcategories
             setSubCategoryName("");
             setSelectedCategory("");
@@ -60,7 +60,7 @@ function Dashboard() {
 
     const handleDeleteCategory = async (id) => {
         try {
-            await axios.delete(`https://backend-main-hackathon.vercel.app/categories/${id}`);
+            await axios.delete(`https://backend-main-hackathon.vercel.app/category/${id}`);
             fetchCategories(); // Refresh categories
         } catch (error) {
             console.error("Error deleting category:", error);
@@ -69,7 +69,7 @@ function Dashboard() {
 
     const handleDeleteSubCategory = async (id) => {
         try {
-            await axios.delete(`https://backend-main-hackathon.vercel.app/subcategories/${id}`);
+            await axios.delete(`https://backend-main-hackathon.vercel.app/subcategory/${id}`);
             fetchCategories(); // Refresh categories
         } catch (error) {
             console.error("Error deleting subcategory:", error);
@@ -173,23 +173,21 @@ function Dashboard() {
                                     Delete
                                 </button>
                             </div>
-                            {cat.subcategories.length > 0 ? (
-                                <ul className="mt-2 list-disc list-inside">
-                                    {cat.subcategories.map((subCat) => (
-                                        <li key={subCat._id} className="flex justify-between">
-                                            {subCat.name}
-                                            <button
-                                                onClick={() => handleDeleteSubCategory(subCat._id)}
-                                                className="text-red-600 hover:underline"
-                                            >
-                                                Delete
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="mt-2 text-gray-500">No subcategories yet</p>
-                            )}
+
+                            <ul className="mt-2 list-disc list-inside">
+                                {cat.subcategories.map((subCat) => (
+                                    <li key={subCat._id} className="flex justify-between">
+                                        {subCat.name}
+                                        <button
+                                            onClick={() => handleDeleteSubCategory(subCat._id)}
+                                            className="text-red-600 hover:underline"
+                                        >
+                                            Delete
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+
                         </div>
                     ))}
                 </div>

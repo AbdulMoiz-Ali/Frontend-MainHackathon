@@ -12,7 +12,7 @@ const Register = () => {
     console.log(data);
 
     try {
-      const response = await axios.post("https://backend-main-hackathon.vercel.app/auth/register", {
+      const response = await axios.post("http://localhost:4000/auth/register", {
         name: username,
         email: email,
         cnic: cnic

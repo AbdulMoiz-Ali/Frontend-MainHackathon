@@ -63,29 +63,24 @@ function Navbar() {
                         {/* Desktop Links */}
                         <div className="hidden sm:flex space-x-6">
                             <Link
-                                to="/home"
+                                to="/dashboard"
                                 className="text-gray-800 hover:text-green-400 dark:text-gray-300 dark:hover:text-white font-medium"
                             >
-                                Home
+                                Admin Dashboard
                             </Link>
                             <Link
-                                to="/about"
+                                to="/signup"
                                 className="text-gray-800 hover:text-green-400 dark:text-gray-300 dark:hover:text-white font-medium"
                             >
-                                About
+                                Registration
                             </Link>
                             <Link
-                                to="/services"
+                                to="/login"
                                 className="text-gray-800 hover:text-green-400 dark:text-gray-300 dark:hover:text-white font-medium"
                             >
-                                Services
+                                Login
                             </Link>
-                            <Link
-                                to="/contact"
-                                className="text-gray-800 hover:text-green-400 dark:text-gray-300 dark:hover:text-white font-medium"
-                            >
-                                Contact Us
-                            </Link>
+
                         </div>
 
                         {/* Donate and Sponsor Buttons (Hidden on Mobile) */}
@@ -94,7 +89,7 @@ function Navbar() {
                                 Donate Now
                             </button>
                             <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-                                Be a Sponsor
+                                Apply Loan
                             </button>
                         </div>
                     </div>
@@ -108,28 +103,22 @@ function Navbar() {
                 >
                     <div className="space-y-1 px-2 pb-3 pt-2">
                         <Link
-                            to="/home"
+                            to="/dashboard"
                             className="block rounded-md bg-green-400 px-3 py-2 text-base font-medium text-black"
                         >
-                            Home
+                            Admin Dashboard
                         </Link>
                         <Link
-                            to="/about"
+                            to="/signup"
                             className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-green-400 hover:text-white"
                         >
-                            About
+                            Regiesteration
                         </Link>
                         <Link
-                            to="/services"
+                            to="/login"
                             className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-green-400 hover:text-white"
                         >
-                            Services
-                        </Link>
-                        <Link
-                            to="/contact"
-                            className="block rounded-md px-3 py-2 text-base font-medium text-black hover:bg-green-400 hover:text-white"
-                        >
-                            Contact Us
+                            Login
                         </Link>
                     </div>
                 </div>
