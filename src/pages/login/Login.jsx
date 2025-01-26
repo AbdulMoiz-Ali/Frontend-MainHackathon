@@ -1,91 +1,100 @@
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import React, { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import { auth } from '../../configration/firebaseconfig/firebaseconfig';
+import axios from 'axios';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // React Icons for password visibility toggle
+import { useDispatch } from 'react-redux';
+import { setUser } from "./../../configration/reduxconfig/slice/user.slice.js";
 
-function Login() {
-    const navigate = useNavigate();
-    const email = useRef()
-    const password = useRef()
-    const [loder, setloder] = useState(null)
-    // function loders(bloen) {
-    //     if (bloen === true) {
-    //         <div class="loader"></div>
-    //     }
+const Login = () => {
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const [showPassword, setShowPassword] = useState(false);
+    const dispatch = useDispatch();
 
-    // }
-    const loginfoam = (e) => {
-        e.preventDefault();
-        setloder(true)
-        // console.log(email.current.value, password.current.value);
+    const onSubmit = async (data) => {
+        const { email, password } = data;
+        console.log(data);
 
-        signInWithEmailAndPassword(
-            auth,
-            email.current.value,
-            password.current.value
-        )
-            .then((userCredential) => {
-                // Signed in
-                const user = userCredential.user;
-                // setloder()
-                <div className="loader hidden"></div>
-                // console.log(user);
-                navigate("/");
-            })
-            .catch((error) => {
-                const errorMessage = error.message;
-                // console.log(errorMessage);
-            }).finally(() => {
-                setloder(false);
+        try {
+            const response = await axios.post("https://backend-main-hackathon.vercel.app/auth/login", {
+                email: email,
+                password: password
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
             });
-    }
+            if (response.status == 200) {
+                localStorage.setItem("accessToken", response.data.ACCESS_TOKEN)
+                dispatch(setUser(response.data?.data))
+                // navigate("/login")
+            }
+            console.log(response.data)
+        } catch (error) {
+            console.log(error)
+        }
 
+    };
 
-
-    const signupgo = () => {
-        // Navigate to specific path
-        navigate('/signup')
-    }
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
     return (
-        <>
-            <section className="h-full bg-gray-300 dark:bg-gray-900 bg-[url('https://flowbite.s3.amazonaws.com/docs/jumbotron/hero-pattern.svg')] dark:bg-[url('https://flowbite.s3.amazonaws.com/docs/jumbotron/hero-pattern-dark.svg')]">
-                <div className="flex py-8 justify-center px-4 mx-auto max-w-screen-xl lg:py-16 z-10 relative">
-                    <div className="w-full h-full lg:max-w-xl p-10 space-y-11 sm:p-8 bg-white rounded-lg shadow-xl dark:bg-gray-800">
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
+                <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Login</h2>
 
-                        <h2 className="text-4xl text-center font-bold text-gray-900 dark:text-white">
-                            Login
-                        </h2>
-                        {loder ? (
-                            <div className="loader mx-auto mt-4"></div>
-                        ) : (
-                            <form onSubmit={loginfoam} className="mt-2 space-y-7">
-                                <div>
-                                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-                                    <input ref={email} type="email" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required />
-                                </div>
-                                <div>
-                                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
-                                    <input ref={password} type="password" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-                                </div>
-                                {/* <div className="flex items-start">
+                <form onSubmit={handleSubmit(onSubmit)}>
 
-                                    <a href="#" className="ms-auto text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">Forgot Password?</a>
-                                </div> */}
-                                <div className="flex max-sm:gap-10 justify-between items-center">
-                                    <button type="submit" className="bg-purple-900 w-50 px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-auto dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"> {loder ? (
-                                        <div className="loader">loding................................</div>
-                                    ) : ("Login to your account")}</button>
-                                    <div className="text-sm max-sm:w-30 font-medium text-gray-900 dark:text-white">
-                                        Not registered yet?   <button onClick={signupgo} className="text-blue-600 hover:underline dark:text-blue-500">Create account</button>
-                                    </div>
-                                </div>
-                            </form>)}
+                    {/* Email Field */}
+                    <div className="mb-4">
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            placeholder="Enter your email"
+                            className={`mt-2 p-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+                            {...register('email', {
+                                required: 'Email is required',
+                                pattern: {
+                                    value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                                    message: 'Invalid email address'
+                                }
+                            })}
+                        />
+                        {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
                     </div>
-                </div>
-            </section>
-        </>
-    )
-}
 
-export default Login
+                    {/* Password Field */}
+                    <div className="mb-6">
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+                        <div className="relative mt-2">
+                            <input
+                                id="password"
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="Enter your password"
+                                className={`p-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+                                {...register('password', { required: 'Password is required' })}
+                            />
+                            <button
+                                type="button"
+                                onClick={togglePasswordVisibility}
+                                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </button>
+                        </div>
+                        {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>}
+                    </div>
+
+                    {/* Submit Button */}
+                    <button type="submit" className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none">
+                        Login
+                    </button>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+export default Login;

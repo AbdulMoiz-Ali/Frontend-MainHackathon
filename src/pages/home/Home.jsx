@@ -1,67 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { getDocs, collection } from 'firebase/firestore';
-import { auth, db } from '../../configration/firebaseconfig/firebaseconfig'; // Ensure this path is correct
-import Herocard from '../../componenet/herocard';
-
+import React from 'react';
 import { Link } from "react-router-dom";
 import heroImage1 from "./../../../public/image-removebg-preview (1).png"; // Replace with the correct path
-import heroImage2 from "./../../../public/logo_saylaniwelfare.22bf709605809177256c.png"; // Replace with the correct path
-import heroImage3 from "./../../../public/logo_saylaniwelfare.22bf709605809177256c.png"; // Replace with the correct path
-
 
 function Home() {
-    const user = auth.currentUser;
-    const [blogs, setBlogs] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
 
-    const fetchBlogs = async () => {
-        try {
-            const querySnapshot = await getDocs(collection(db, "blogs"));
-            return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        } catch (error) {
-            console.error("Error fetching blogs:", error);
-            return []; // Return an empty array on error
-        }
-    };
-
-    const fetchUsers = async () => {
-        try {
-            const querySnapshot = await getDocs(collection(db, "users"));
-            return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        } catch (error) {
-            console.error("Error fetching users:", error);
-            return []; // Return an empty array on error
-        }
-    };
-
-    useEffect(() => {
-        setIsLoading(false);
-        const loadBlogs = async () => {
-            const [fetchedBlogs, fetchedUsers] = await Promise.all([fetchBlogs(), fetchUsers()]);
-
-            // Combine blogs with user data
-            const combinedData = fetchedBlogs.map(blog => {
-                const user = fetchedUsers.find(user => user.id === blog.uid); // Assuming blog has a userId field
-                return {
-                    ...blog,
-                    profileimg: user ? user.image : '', // Assuming user has an imageUrl field
-                    profilefirstname: user ? user.firstname : 'Unknown', // Assuming user has firstname field
-                    profilelastname: user ? user.lastname : 'Unknown' // Assuming user has firstname field
-                };
-            });
-
-            setBlogs(combinedData);
-            setIsLoading(true);
-
-        };
-
-        loadBlogs();
-    }, []);
 
     return (
-
-
-
         <section className="bg-white mt-2 dark:bg-gray-800">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col-reverse lg:flex-row items-center lg:justify-between py-16 lg:py-24">

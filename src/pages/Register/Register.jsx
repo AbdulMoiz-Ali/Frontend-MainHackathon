@@ -1,103 +1,101 @@
-import React, { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../../configration/firebaseconfig/firebaseconfig';
+import axios from 'axios';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
 
-function Signup() {
+const Register = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
-  const firstname = useRef()
-  const lastname = useRef()
-  const email = useRef()
-  const password = useRef()
-  const [loder, setloder] = useState(null)
 
-  const signupfoam = (e) => {
-    e.preventDefault();
-    setloder(true)
-    const userdata = {
-      firstname: firstname.current.value,
-      lastname: lastname.current.value,
-      email: email.current.value,
-      password: password.current.value
-    };
-    // console.log(userdata)
+  const onSubmit = async (data) => {
+    const { username, email, cnic } = data;
+    console.log(data);
 
-    createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
-      .then((userCredential) => {
-        // Signed up 
-        const user = userCredential.user;
-
-        setDoc(doc(db, "users", user.uid), userdata).then((userRef) => {
-          // console.log("succseass")
-          console.log(user.uid)
-
-        });
-      })
-      .catch((error) => {
-        const errorMessage = error.message;
-        // console.log(errorMessage);
-      }).finally(() => {
-        setloder(false);
-        navigate("/")
+    try {
+      const response = await axios.post("https://backend-main-hackathon.vercel.app/auth/register", {
+        name: username,
+        email: email,
+        cnic: cnic
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-  }
+      if (response.status == 200) {
+        localStorage.setItem("accessToken", response.data.ACCESS_TOKEN);
+        navigate("/login")
+      }
+      console.log(response.data)
+    } catch (error) {
+      console.log(error)
+    }
 
+  };
 
-
-
-
-
-  const logingo = () => {
-    // Navigate to specific path
-    navigate('/login')
-  }
   return (
-    <>
-      <section className="h-screen bg-purple-300 dark:bg-gray-900 bg-[url('https://flowbite.s3.amazonaws.com/docs/jumbotron/hero-pattern.svg')] dark:bg-[url('https://flowbite.s3.amazonaws.com/docs/jumbotron/hero-pattern-dark.svg')]">
-        <div className="flex py-8 justify-center px-4 mx-auto max-w-screen-xl lg:py-12 z-10 relative">
-          <div className="w-full h-full lg:max-w-xl p-5 space-y-5 sm:p-8 bg-white rounded-lg shadow-xl dark:bg-gray-800">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
+        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Register</h2>
 
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white">
-              Register to Microfinance
-            </h2>
-            {loder ? (
-              <div className="loader mx-auto mt-4"></div>
-            ) : (
-              <form onSubmit={signupfoam} className="mt-2 space-y-4">
-                <div class="grid md:grid-cols-2 md:gap-6">
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Full Name</label>
-                    <input ref={firstname} type="text" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Full Name" required />
-                  </div>
-                  <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Email</label>
-                    <input ref={lastname} type="email" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required />
-                  </div>
-                </div>
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">CNIC No .</label>
-                  <input ref={email} type="number" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required />
-                </div>
+        <form onSubmit={handleSubmit(onSubmit)}>
 
-
-                <div className="flex flex-col max-sm:gap-10 gap-5 items-center">
-                  <button type="submit" className="bg-purple-900 w-50 px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-full dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"> {loder ? (
-                    <div className="loader">loding................................</div>
-                  ) : ("Login to your account")}</button>
-                  <div className="text-sm max-sm:w-30 font-medium text-gray-900 dark:text-white">
-                    Already have an account? <button onClick={logingo} className="text-blue-600 hover:underline dark:text-blue-500">Login here...</button>
-                  </div>
-                </div>
-              </form>)}
+          {/* Username Field */}
+          <div className="mb-4">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
+            <input
+              id="username"
+              type="text"
+              placeholder="Enter your username"
+              className={`mt-2 p-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.username ? 'border-red-500' : 'border-gray-300'}`}
+              {...register('username', { required: 'Username is required' })}
+            />
+            {errors.username && <p className="mt-1 text-sm text-red-500">{errors.username.message}</p>}
           </div>
-        </div>
-      </section>
 
-    </>
-  )
-}
+          {/* Email Field */}
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              className={`mt-2 p-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+              {...register('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /^[a-zA-Z0-9._-]+@[a-zA0-9.-]+\.[a-zA-Z]{2,4}$/,
+                  message: 'Invalid email address'
+                }
+              })}
+            />
+            {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
+          </div>
 
+          {/* CNIC Field */}
+          <div className="mb-4">
+            <label htmlFor="cnic" className="block text-sm font-medium text-gray-700">CNIC</label>
+            <input
+              id="cnic"
+              type="text"
+              placeholder="Enter your CNIC"
+              className={`mt-2 p-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cnic ? 'border-red-500' : 'border-gray-300'}`}
+              {...register('cnic', {
+                required: 'CNIC is required',
+                minLength: 13,
+                maxLength: 13
+              })}
+            />
+            {errors.cnic && <p className="mt-1 text-sm text-red-500">{errors.cnic.message}</p>}
+          </div>
+          <p>Already have an account ? <Link to={"/login"}>Login</Link></p>
+          {/* Submit Button */}
+          <button type="submit" className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none">
+            Register
+          </button>
+        </form>
+      </div >
+    </div >
+  );
+};
 
-// export default user
-export default Signup
+export default Register;
